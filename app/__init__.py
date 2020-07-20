@@ -14,7 +14,7 @@ from app.handles.common_handles import BadRequest, NotFound, _BaseErrorHandler
 
 def create_app():
     # Create and configure an instance of the Flask application
-    from app.db import init_db
+    from app.db import init_db, db_session
 
     app = Flask(__name__)
 
@@ -47,5 +47,9 @@ def create_app():
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response
+
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db_session.remove()
 
     return app
